@@ -97,8 +97,8 @@ export default function Home() {
     ]);
   };
 
-  const handleRemoveAllSplits = (lineIndex: number) => {
-    setSplits((prev) => prev.filter((s) => s.lineIndex !== lineIndex));
+  const handleRemoveSplit = (lineIndex: number, side: "shabados" | "banidb") => {
+    setSplits((prev) => prev.filter((s) => !(s.lineIndex === lineIndex && s.side === side)));
   };
 
   const handlePageInputSubmit = () => {
@@ -198,7 +198,7 @@ export default function Home() {
                 diffsOnly={diffsOnly}
                 splits={splits}
                 onSplit={handleSplit}
-                onRemoveAllSplits={handleRemoveAllSplits}
+                onRemoveSplit={handleRemoveSplit}
               />
             </div>
           </>

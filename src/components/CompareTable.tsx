@@ -9,7 +9,7 @@ type Props = {
   diffsOnly?: boolean;
   splits: LineSplit[];
   onSplit: (lineIndex: number, side: "shabados" | "banidb", wordIndex: number) => void;
-  onRemoveAllSplits: (lineIndex: number) => void;
+  onRemoveSplit: (lineIndex: number, side: "shabados" | "banidb") => void;
 };
 
 export function CompareTable({
@@ -17,7 +17,7 @@ export function CompareTable({
   diffsOnly = false,
   splits,
   onSplit,
-  onRemoveAllSplits,
+  onRemoveSplit,
 }: Props) {
   const rendered = applyLineSplits(result.lines, splits);
   const lines = diffsOnly ? rendered.filter((l) => l.hasDiff) : rendered;
@@ -48,14 +48,14 @@ export function CompareTable({
               key={line.renderKey}
               line={line}
               lineNumber={i + 1}
-              onSplit={
-                line.canSplit
-                  ? (side, wordIndex) => onSplit(line.index, side, wordIndex)
-                  : undefined
-              }
+              onSplit={(side, wordIndex) => {
+                const origIdx =
+                  side === "shabados" ? line.sosOriginalIndex : line.bdbOriginalIndex;
+                if (origIdx !== null) onSplit(origIdx, side, wordIndex);
+              }}
               onUnsplit={
-                line.isSplitFragment
-                  ? () => onRemoveAllSplits(line.index)
+                line.isSplitFragment && line.splitSource
+                  ? () => onRemoveSplit(line.splitSource!.lineIndex, line.splitSource!.side)
                   : undefined
               }
             />

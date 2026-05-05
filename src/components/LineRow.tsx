@@ -53,6 +53,9 @@ export function LineRow({ line, lineNumber, onSplit, onUnsplit }: Props) {
     if (!line.isSplitFragment) setExpanded((e) => !e);
   };
 
+  const canSplitSide = (side: "shabados" | "banidb") =>
+    side === "shabados" ? line.canSplitShabados : line.canSplitBanidb;
+
   const renderCell = (
     side: "shabados" | "banidb",
     tokens: DiffToken[],
@@ -73,7 +76,7 @@ export function LineRow({ line, lineNumber, onSplit, onUnsplit }: Props) {
     return (
       <div className="relative group/cell">
         <DiffText tokens={tokens} />
-        {line.canSplit && onSplit && !splitMode && (
+        {canSplitSide(side) && onSplit && !splitMode && (
           <button
             className="absolute top-0 right-0 opacity-0 group-hover/cell:opacity-100 text-[11px] text-stone-600 hover:text-amber-400 transition-opacity px-1 py-0.5"
             title="Split this line at a word boundary"
