@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { SOURCES, type CompareResult, type SourceKey } from "@/lib/types";
+import { SOURCES, type CompareResult, type SourceKey, type LineSplit } from "@/lib/types";
 import { Navigation } from "@/components/Navigation";
 import { CompareTable } from "@/components/CompareTable";
 
@@ -14,6 +14,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [diffsOnly, setDiffsOnly] = useState(false);
   const [lineOffset, setLineOffset] = useState(0);
+  const [splits, setSplits] = useState<LineSplit[]>([]);
   const [skipSearching, setSkipSearching] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -58,10 +59,12 @@ export default function Home() {
       if (e.key === "ArrowRight" || e.key === "ArrowDown") {
         e.preventDefault();
         setLineOffset(0);
+        setSplits([]);
         setPageNo((p) => { const n = Math.min(p + 1, maxPage); setPageInput(String(n)); return n; });
       } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         e.preventDefault();
         setLineOffset(0);
+        setSplits([]);
         setPageNo((p) => { const n = Math.max(p - 1, 1); setPageInput(String(n)); return n; });
       }
     };
@@ -74,6 +77,7 @@ export default function Home() {
     setPageNo(1);
     setPageInput("1");
     setLineOffset(0);
+    setSplits([]);
     setResult(null);
   };
 
@@ -83,6 +87,18 @@ export default function Home() {
     setPageNo(clamped);
     setPageInput(String(clamped));
     setLineOffset(0);
+    setSplits([]);
+  };
+
+  const handleSplit = (lineIndex: number, side: "shabados" | "banidb", wordIndex: number) => {
+    setSplits((prev) => [
+      ...prev.filter((s) => !(s.lineIndex === lineIndex && s.side === side)),
+      { lineIndex, side, wordIndex },
+    ]);
+  };
+
+  const handleRemoveAllSplits = (lineIndex: number) => {
+    setSplits((prev) => prev.filter((s) => s.lineIndex !== lineIndex));
   };
 
   const handlePageInputSubmit = () => {
@@ -110,6 +126,7 @@ export default function Home() {
         if (data && data.diffCount > 0) {
           setPageNo(p);
           setPageInput(String(p));
+          setSplits([]);
           setResult(data);
           break;
         }
@@ -176,7 +193,13 @@ export default function Home() {
               </span>
             </div>
             <div className={loading ? "opacity-50 pointer-events-none" : ""}>
-              <CompareTable result={result} diffsOnly={diffsOnly} />
+              <CompareTable
+                result={result}
+                diffsOnly={diffsOnly}
+                splits={splits}
+                onSplit={handleSplit}
+                onRemoveAllSplits={handleRemoveAllSplits}
+              />
             </div>
           </>
         )}

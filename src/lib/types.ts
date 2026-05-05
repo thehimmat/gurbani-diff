@@ -76,6 +76,12 @@ export type CompareLine = {
   banidbDiff: DiffToken[];
 };
 
+export type LineSplit = {
+  lineIndex: number;
+  side: "shabados" | "banidb";
+  wordIndex: number; // split AFTER this word (0-indexed in the clean text)
+};
+
 export type CompareResult = {
   sourceKey: SourceKey;
   pageNo: number;

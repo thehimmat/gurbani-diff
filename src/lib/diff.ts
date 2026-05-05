@@ -8,7 +8,7 @@ export function stripVishraam(text: string): string {
     .trim();
 }
 
-function tokenize(text: string): string[] {
+export function tokenize(text: string): string[] {
   return text.split(/\s+/).filter(Boolean);
 }
 
@@ -58,6 +58,28 @@ function backtrack(
     backtrack(dp, a, b, i, j - 1, aDiff, bDiff);
     bDiff.push({ text: b[j - 1], type: "added" });
   }
+}
+
+export function diffRaw(
+  aText: string,
+  bText: string
+): { aDiff: DiffToken[]; bDiff: DiffToken[]; hasDiff: boolean } {
+  const aTokens = tokenize(aText);
+  const bTokens = tokenize(bText);
+
+  if (aTokens.length === 0 && bTokens.length === 0) {
+    return { aDiff: [], bDiff: [], hasDiff: false };
+  }
+
+  const dp = lcs(aTokens, bTokens);
+  const aDiff: DiffToken[] = [];
+  const bDiff: DiffToken[] = [];
+  backtrack(dp, aTokens, bTokens, aTokens.length, bTokens.length, aDiff, bDiff);
+
+  const hasDiff =
+    aDiff.some((t) => t.type !== "equal") ||
+    bDiff.some((t) => t.type !== "equal");
+  return { aDiff, bDiff, hasDiff };
 }
 
 export function diffGurmukhi(

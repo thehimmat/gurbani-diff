@@ -1,15 +1,27 @@
 "use client";
 
-import type { CompareResult } from "@/lib/types";
+import type { CompareResult, LineSplit } from "@/lib/types";
+import { applyLineSplits } from "@/lib/splits";
 import { LineRow } from "./LineRow";
 
 type Props = {
   result: CompareResult;
   diffsOnly?: boolean;
+  splits: LineSplit[];
+  onSplit: (lineIndex: number, side: "shabados" | "banidb", wordIndex: number) => void;
+  onRemoveAllSplits: (lineIndex: number) => void;
 };
 
-export function CompareTable({ result, diffsOnly = false }: Props) {
-  const lines = diffsOnly ? result.lines.filter((l) => l.hasDiff) : result.lines;
+export function CompareTable({
+  result,
+  diffsOnly = false,
+  splits,
+  onSplit,
+  onRemoveAllSplits,
+}: Props) {
+  const rendered = applyLineSplits(result.lines, splits);
+  const lines = diffsOnly ? rendered.filter((l) => l.hasDiff) : rendered;
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full table-fixed border-collapse">
@@ -32,7 +44,21 @@ export function CompareTable({ result, diffsOnly = false }: Props) {
         </thead>
         <tbody>
           {lines.map((line, i) => (
-            <LineRow key={line.index} line={line} lineNumber={i + 1} />
+            <LineRow
+              key={line.renderKey}
+              line={line}
+              lineNumber={i + 1}
+              onSplit={
+                line.canSplit
+                  ? (side, wordIndex) => onSplit(line.index, side, wordIndex)
+                  : undefined
+              }
+              onUnsplit={
+                line.isSplitFragment
+                  ? () => onRemoveAllSplits(line.index)
+                  : undefined
+              }
+            />
           ))}
         </tbody>
       </table>
