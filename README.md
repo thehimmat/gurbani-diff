@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gurbani Diff
 
-## Getting Started
+A side-by-side tool for comparing how the same Gurbani is divided into lines across
+different digitizations of Sri Guru Granth Sahib. It aligns the verse divisions used by
+**BaniDB** and **Shabad OS** so scholars and editors can find and reconcile where the two
+sources break lines differently.
 
-First, run the development server:
+## What it does
+
+- **Side-by-side compare** — pulls the same shabad from each source and lines them up row by row.
+- **Re-split and merge** — split a line at any word boundary, or merge a split back into the
+  previous row, to model how an alignment should read.
+- **Shift alignment** — offset one source's lines relative to the other to recover from a
+  missing or extra line break.
+- **Jump to differences** — scan forward to the next ang (page) where the two sources disagree.
+
+## Stack
+
+Next.js (App Router) · TypeScript · Tailwind CSS. Gurbani text is fetched from the BaniDB API;
+line-split metadata comes from Shabad OS.
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+One of a suite of Gurmukhi / Gurbani tools. More at [thehimmat.com](https://thehimmat.com).
